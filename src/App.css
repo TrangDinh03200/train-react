@@ -1,0 +1,48 @@
+html,
+#root {
+  background: #464a4e;
+}
+.card-body label {
+  font-size: 14px;
+}
+.row.item-block {
+  background-color: #464a4e;
+  margin: 10px 0px;
+}
+.daytime-block {
+  border: 1px solid #fff;
+  border-radius: 10px;
+  text-align: center;
+}
+span.month-card {
+  font-size: 11px;
+  font-weight: bolder;
+}
+span.year-card {
+  font-size: 12px;
+  font-family: emoji;
+}
+strong.date-block {
+  font-size: x-large;
+}
+.block-price {
+  background-color: #8712f5;
+  padding: 4px 15px;
+  border-radius: 8px;
+  border: 1px solid;
+  margin: 30px 0px;
+  text-align: center;
+  max-width: auto;
+}
+.col-md-8.title-name {
+  margin: 35px 0px;
+}
+
+.col-md-2.daytime-block {
+  margin: 5px 0px;
+  /* margin-left: 0px; */
+}
+button.btn.btn-info.w-100.pb-2.pt-2 {
+  color: #fff;
+  font-weight: bold;
+}
