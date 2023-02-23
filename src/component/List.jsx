@@ -1,21 +1,25 @@
 import React from "react";
+import Item from "./Item";
 const options = ["2020", "2021", "2022", "2023", "2024"];
 
-const List = ({ list }) => {
+const List = ({ list, onSelect }) => {
   const [initList, setInitList] = React.useState(list ?? []);
   const [filterValue, setFilterValue] = React.useState(null);
+
   const handleChangeOptions = (event) => {
-    setFilterValue(event.target.value);
+    setFilterValue(Number(event.target.value));
   };
 
   React.useEffect(() => {
     setInitList(() => {
-      if (filterValue) {
-        return list.filter(({ dateTime }) => dateTime.getFullYear() == filterValue);
+      if (filterValue !== null) {
+        return list.filter(
+          ({ dateTime }) => new Date(dateTime).getFullYear() === filterValue
+        );
       }
-      return list
-    })
-  }, [filterValue]);
+      return list;
+    });
+  }, [filterValue, list]);
 
   return (
     <div className="row pt-5">
@@ -38,7 +42,6 @@ const List = ({ list }) => {
                       <select
                         className="form-select"
                         onChange={handleChangeOptions}
-                        on
                       >
                         {options.map((option, index) => {
                           return <option key={index}>{option}</option>;
@@ -50,30 +53,12 @@ const List = ({ list }) => {
               </div>
             </div>
             {initList &&
-              initList.map((listSelected) => (
-                <div className="row item-block rounded p-1">
-                  <div className="col-md-2 daytime-block">
-                    <div>
-                      <strong>{listSelected.dateTime.getDate()}</strong>
-                    </div>
-                    <div>
-                      <strong>{listSelected.dateTime.toLocaleString('default', { month: 'long' })}</strong>
-                    </div>
-                    <div>
-                      <strong>{listSelected.dateTime.getFullYear()}</strong>
-                    </div>
-                  </div>
-                  <div className="col-md-8 title-name">
-                    <strong>{listSelected.name}</strong>
-                  </div>
-                  <div className="col-md-2">
-                    <div className="form-group block-price">
-                      <label htmlFor="exampleInputTitle">
-                        <strong className="price">${listSelected.amount}</strong>
-                      </label>
-                    </div>
-                  </div>
-                </div>
+              initList.map((itemSelected, index) => (
+                <Item
+                  key={index}
+                  itemSelected={itemSelected}
+                  onSelect={onSelect}
+                ></Item>
               ))}
           </div>
         </div>
