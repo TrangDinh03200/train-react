@@ -3,6 +3,7 @@ import Item from "./Item";
 const options = ["2020", "2021", "2022", "2023", "2024"];
 
 const List = ({ list, onSelect }) => {
+  console.log(list)
   const [initList, setInitList] = React.useState(list ?? []);
   const [filterValue, setFilterValue] = React.useState(null);
 

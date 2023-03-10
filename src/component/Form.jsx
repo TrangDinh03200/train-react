@@ -21,50 +21,124 @@ const Form = ({
     amount: true,
   });
 
+
+  const initInput = {
+    id: Date.now(),
+    name: "",
+    amount: "",
+    dateTime: new Date(),
+  }
+
+  const formReducer = (state, action) => {
+    switch (action.type.name) {
+      case "INIT" :
+        return action.data ?? state
+      case "SELECT":
+        return [action.data];
+      case "CHANGE" :
+        switch (action.type.input) {
+          case "name":
+            return {...state,
+                    name: action.data};
+            case "amount":
+            return {...state,
+              amount: action.data};
+            case "date":
+            return {...state,
+              dateTime: action.data};
+            default: 
+           return state;
+        }
+      case "RESET" :
+        return action.data
+      default:
+        return state;
+    }
+  }
+
+  const [input, dispatch] = React.useReducer(formReducer,initInput);
+
   const handleName = (event) => {
-    setInputParams({
-      ...inputParams,
-      name: event.target.value,
-    });
+    // setInputParams({
+    //   ...inputParams,
+    //   name: event.target.value,
+    // });
+    dispatch({
+      type: {
+        name : "CHANGE",
+        input: event.target.name
+      },
+      data : event.target.value
+    })
   };
 
   const handleAmount = (event) => {
-    setInputParams({
-      ...inputParams,
-      amount: event.target.value.replace(/\D/g, ""),
-    });
+    // setInputParams({
+    //   ...inputParams,
+    //   amount: event.target.value.replace(/\D/g, ""),
+    // });
+    dispatch({
+      type: {
+        name : "CHANGE",
+        input: event.target.name
+      },
+      data : event.target.value.replace(/\D/g, "")
+    })
   };
 
   const handleDate = (event) => {
-    setInputParams({
-      ...inputParams,
-      dateTime: event.target.value ? new Date(event.target.value) : new Date(),
-    });
+    // setInputParams({
+    //   ...inputParams,
+    //   dateTime: event.target.value ? new Date(event.target.value) : new Date(),
+    // });
+
+    dispatch({
+      type: {
+        name : "CHANGE",
+        input: event.target.name
+      },
+      data : event.target.value ? new Date(event.target.value) : new Date(),
+    })
   };
 
   const handleEdit = (event) => {
     event.preventDefault();
-    const itemEdited = { id: itemSelected.id, ...inputParams };
+    const itemEdited = { id: itemSelected.id, ...input };
     _validate(itemEdited);
     if (!validate.name || !validate.amount) {
       alert("Please check your input data before submit");
       return;
     }
     onEdit(itemEdited);
-    setInputParams({ ...initInputParam, id: Date.now() });
+    dispatch({
+      type: {
+        name : "RESET",
+      },
+      data : initInput,
+    })
     onSelect();
   };
 
   const handleCancel = () => {
-    setInputParams({ ...initInputParam, id: Date.now() });
+    dispatch({
+      type: {
+        name : "RESET",
+      },
+      data : initInput,
+    })
     onSelect();
   };
 
   const handleRemove = (event) => {
     event.preventDefault();
     onSelect();
-    onRemove(inputParams.id);
-    setInputParams({ ...initInputParam, id: Date.now() });
+    onRemove(input.id);
+    dispatch({
+      type: {
+        name : "RESET",
+      },
+      data : initInput,
+    })
   };
 
   const _validate = (params) => {
@@ -81,14 +155,20 @@ const Form = ({
   const handleSubmitForm = (event) => {
     event.preventDefault();
 
-    _validate(inputParams);
+    _validate(input);
 
     if (!validate.name || !validate.amount) {
       alert("Please check your input data before submit");
       return;
     }
-    onSubmit(inputParams);
-    setInputParams({ ...initInputParam, id: Date.now() });
+    onSubmit(input);
+    // setInputParams({ ...initInputParam, id: Date.now() });
+    dispatch({
+      type: {
+        name : "RESET",
+      },
+      data : initInput,
+    })
   };
 
   React.useEffect(() => {
@@ -96,11 +176,17 @@ const Form = ({
   }, [inputParams]);
 
   React.useEffect(() => {
-    setInputParams({
-      ...initInputParam,
-      ...itemSelected,
-    });
-  }, [itemSelected, initInputParam]);
+    // setInputParams({
+    //   ...initInputParam,
+    //   ...itemSelected,
+    // });
+    dispatch({
+      type: {
+        name : "INIT",
+      },
+      data : itemSelected,
+    })
+  }, [itemSelected]);
 
   return (
     <div className="card">
@@ -123,10 +209,11 @@ const Form = ({
                 </label>
                 <input
                   type="text"
-                  value={inputParams.name}
+                  value={input.name}
                   className="form-control"
                   id="exampleInputTitle"
                   placeholder="Title"
+                  name="name"
                   onChange={handleName}
                 />
               </div>
@@ -139,13 +226,14 @@ const Form = ({
                 <input
                   type="text"
                   value={
-                    inputParams.amount
-                      ? Number(inputParams.amount).toLocaleString()
+                    input.amount
+                      ? Number(input.amount).toLocaleString()
                       : ""
                   }
                   className="form-control"
                   id="exampleInputAmount"
                   placeholder="Amount"
+                  name="amount"
                   onChange={handleAmount}
                 />
               </div>
@@ -159,13 +247,14 @@ const Form = ({
               <input
                 type="date"
                 value={
-                  inputParams?.dateTime && inputParams.dateTime instanceof Date
-                    ? inputParams.dateTime.toISOString().split("T")[0]
+                  input?.dateTime && input.dateTime instanceof Date
+                    ? input.dateTime.toISOString().split("T")[0]
                     : new Date().toISOString().split("T")[0]
                 }
                 className="form-control"
                 id="exampleInputDate"
                 placeholder=""
+                name="date"
                 onChange={handleDate}
               />
             </div>
